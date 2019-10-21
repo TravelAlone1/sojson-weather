@@ -1,0 +1,96 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    username: lingx
+    password: Lingx_2019
+    url: jdbc:mysql://192.168.56.10/weather?serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    druid:
+      #初始化时建立物理连接的个数
+      initial-size: 5
+      #最小连接池数量
+      min-idle: 5
+      #最大连接池数量 maxIdle已经不再使用
+      max-active: 20
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      #申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+      test-while-idle: true
+      #既作为检测的间隔时间又作为testWhileIdel执行的依据
+      time-between-eviction-runs-millis: 60000
+      #销毁线程时检测当前连接的最后活动时间和当前时间差大于该值时，关闭当前连接
+      min-evictable-idle-time-millis: 30000
+      #mysql中为 select 'x'
+      #oracle中为 select 1 from dual
+      validation-query: select 'x'
+      #申请连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-borrow: true
+      #归还连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-return: false
+      #当数据库抛出不可恢复的异常时,抛弃该连接
+      #exception-sorter: true
+      #是否缓存preparedStatement,mysql5.5+建议开启
+      #spring.datasource.druid.pool-prepared-statements=true
+      #当值大于0时poolPreparedStatements会自动修改为true
+      max-pool-prepared-statement-per-connection-size: 20
+      #配置扩展插件
+      filters: stat,wall
+      #通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connection-properties: true;druid.stat.slowSqlMillis=500
+      #合并多个DruidDataSource的监控数据
+      use-global-data-source-stat: true
+
+
+  redis:
+    host: 192.168.56.10
+    database: 0
+    port: 6379
+    password:
+    lettuce:
+      pool:
+        max-idle: 8
+        max-wait: -1ms
+        max-active: 8
+    timeout: 3000
+
+
+  quartz:
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: clusteredScheduler #调度器名称
+            instanceId: Auto # 调度器实例编号自动生成
+#          jobStore:
+#            class: org.quartz.impl.jdbcjobstore.JobStoreTX # 持久化方式配置
+#            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate # 持久化方式配置驱动方式，MySql数据库
+#            tablePrefix: QRTZ_  # 相关数据表前缀名
+#            isClustered: true   # 开启分布式部署
+#            clusterCheckinInterval: 10000 #分布式节点有效性检查时间间隔，单位毫秒
+#            useProperties: false # 配置是否使用
+
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool #线程池实现类
+            threadCount: 10 # 执行并线程最大数量
+            threadPriority: 5 # 线程优先级
+            threadsInheritContextClassLoaderOfInitializingThread: true #配置是否启动自动加载数据库内的定时任务，默认true
+
+mybatis:
+  # type-aliases扫描路径
+  type-aliases-package: ccom.lx.spring.cloud.weather.entity
+  # mapper xml实现扫描路径
+  mapper-locations: classpath:mapper/*.xml
+
+http:
+  max-total: 300
+  default-max-per-route: 50
+  connect-timeout: 1000
+  connection-request-timeout: 500
+  socket-timeout: 500
+
+
+proxy:
+  enabled: false
